@@ -1,8 +1,7 @@
+var collection = new Mongo.Collection("Collection");
+
 if (Meteor.isServer) {
   Publications = {};
-  var calcId = function( date ){
-    return date.format("MM/DD/YYYY");
-  };
 
   Publications.aggregate = function(week, year){
     var self = this;
@@ -14,7 +13,11 @@ if (Meteor.isServer) {
     self.week = moment( ).year(year).isoWeek( week );
     self.start = week.startOf('week');
     self.end = week.endOf('week');
-    self.colName = "CollectionName";
+    self.colName = "aggregateCollectionName";
+  
+    var calcId = function( date ){
+      return date.format("MM/DD/YYYY");
+    };
 
     var calcAggregate = function(date){
       // ... something to calculate your aggregate value for that date

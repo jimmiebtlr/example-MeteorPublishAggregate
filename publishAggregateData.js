@@ -1,18 +1,27 @@
 var collection = new Mongo.Collection("Collection");
 
+if( Meteor.isClient ){
+  aggregate = new Mongo.Collection("aggregateCollectionName");
+  Meteor.subscribe("aggregate", 42, 2014);
+}
+
 if (Meteor.isServer) {
   Publications = {};
 
-  Publications.aggregate = function(week, year){
+  /*
+   * Takes IsoWeek and Year 
+   */
+  Publications.aggregate = function(weekNum, year){
     var self = this;
-    check( week, Number );
+    console.log( weekNum, year );
+    check( weekNum, Number );
     check( year, Number );
 
     var initializing = true;
   
-    self.week = moment( ).year(year).isoWeek( week );
-    self.start = week.startOf('week');
-    self.end = week.endOf('week');
+    self.week = moment( ).year(year).isoWeek( weekNum );
+    self.start = self.week.startOf('week');
+    self.end = self.week.endOf('week');
     self.colName = "aggregateCollectionName";
   
     var calcId = function( date ){
@@ -28,12 +37,12 @@ if (Meteor.isServer) {
 
     var updateAggregate = function(doc){
       if( !initializing ){
-        self.changed(colName, calcId(doc.date), {aggregate: calcAggregate(date)} );
+        self.changed(self.colName, calcId(doc.date), {aggregate: calcAggregate(date)} );
       }
     }
   
     var selector = {'date': [{$gte: self.start.clone().startOf('day')}, {$lte: self.end.endOf('day')}]};
-    self.handle = collectionName.find(selector).observe({
+    self.handle = collection.find(selector).observe({
       added: updateAggregate,
       changed: function( old, current ){
         updateAggregate( current );
@@ -44,8 +53,8 @@ if (Meteor.isServer) {
       removed: updateAggregate
     });
 
-    for( var date = start.clone(); !date.isAfter( end ); date.add(1, 'days') ){
-      self.added( colName, calcId( date ), calAggregate( date ) );
+    for( var date = self.start.clone(); !date.isAfter( self.end ); date.add(1, 'days') ){
+      self.added( self.colName, calcId( date ), calcAggregate( date ) );
     }
 
     initializing = false;
@@ -55,7 +64,7 @@ if (Meteor.isServer) {
     });
   };
 
-  Meteor.publish( Publications.aggregate );
+  Meteor.publish( "aggregate", Publications.aggregate );
 }
 
 /*

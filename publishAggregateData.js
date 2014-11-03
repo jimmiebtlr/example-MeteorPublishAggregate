@@ -1,4 +1,4 @@
-var collection = new Mongo.Collection("Collection");
+collection = new Mongo.Collection("Collection");
 
 if( Meteor.isClient ){
   aggregate = new Mongo.Collection("aggregateCollectionName");
@@ -13,15 +13,14 @@ if (Meteor.isServer) {
    */
   Publications.aggregate = function(weekNum, year){
     var self = this;
-    console.log( weekNum, year );
     check( weekNum, Number );
     check( year, Number );
 
     var initializing = true;
   
     self.week = moment( ).year(year).isoWeek( weekNum );
-    self.start = self.week.startOf('week');
-    self.end = self.week.endOf('week');
+    self.start = self.week.clone().startOf('week');
+    self.end = self.week.clone().endOf('week');
     self.colName = "aggregateCollectionName";
   
     var calcId = function( date ){

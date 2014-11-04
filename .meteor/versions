@@ -53,9 +53,8 @@ ui@1.0.4
 underscore@1.0.1
 url@1.0.2
 velocity:core@1.0.0-rc.2
-velocity:html-reporter@0.1.5
+velocity:html-reporter@0.3.0-rc.1
 velocity:meteor-stubs@1.0.0
 velocity:shim@0.0.2
 webapp-hashing@1.0.1
 webapp@1.1.4
-xolvio:velocity@0.1.18
